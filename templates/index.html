@@ -1,1 +1,213 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Fake Product Detector{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+  <div class="hero-pill">
+    <i class="fa-solid fa-link"></i>
+    <span>Educational Blockchain & Barcode Verification Prototype</span>
+  </div>
+
+  <h1 class="hero-title">
+    Identifying Fake Products Through a<br>
+    Barcode-Based Blockchain System
+  </h1>
+
+  <p class="hero-desc">
+    Protecting consumer safety and brand integrity by cross-referencing physical product barcodes and QR codes with an immutable, cryptographically-linked blockchain ledger.
+  </p>
+
+  <div class="hero-cta-group">
+    <a href="{{ url_for('verify') }}" class="btn btn-emerald" style="font-size: 1.05rem; padding: 0.85rem 1.8rem;">
+      <i class="fa-solid fa-qrcode"></i> Verify a Product Now
+    </a>
+    <a href="{{ url_for('register_product') }}" class="btn btn-primary">
+      <i class="fa-solid fa-plus-circle"></i> Register Product
+    </a>
+    <a href="{{ url_for('login') }}" class="btn btn-secondary">
+      <i class="fa-solid fa-shield-halved"></i> Admin Login
+    </a>
+  </div>
+
+  <!-- Live Stats Overview Bar -->
+  <div class="grid-4" style="margin-top: 2rem;">
+    <div class="kpi-card">
+      <div class="kpi-icon" style="background: rgba(99, 102, 241, 0.15); color: var(--primary-light);">
+        <i class="fa-solid fa-box-open"></i>
+      </div>
+      <div class="kpi-info">
+        <h3>{{ metrics.total_products }}</h3>
+        <p>Registered Products</p>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-icon" style="background: rgba(16, 185, 129, 0.15); color: var(--emerald);">
+        <i class="fa-solid fa-circle-check"></i>
+      </div>
+      <div class="kpi-info">
+        <h3>{{ metrics.verified_count }}</h3>
+        <p>Successful Verifications</p>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-icon" style="background: rgba(6, 182, 212, 0.15); color: var(--cyan);">
+        <i class="fa-solid fa-cubes"></i>
+      </div>
+      <div class="kpi-info">
+        <h3>{{ metrics.total_blocks }}</h3>
+        <p>Mined Blocks</p>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-icon" style="background: rgba(244, 63, 94, 0.15); color: var(--rose);">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+      </div>
+      <div class="kpi-info">
+        <h3>{{ metrics.failed_count }}</h3>
+        <p>Flagged Inauthentic Scans</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Academic Prototype Disclaimer Box -->
+<div class="disclaimer-card">
+  <i class="fa-solid fa-circle-info"></i>
+  <div>
+    <h4>Engineering Project Notice & Conceptual Scope</h4>
+    <p>
+      This software is an educational prototype developed for a Computer Science & Engineering degree project. 
+      While the software cryptographically guarantees the integrity of registration records on a simulated blockchain ledger, 
+      physical packaging security in production systems necessitates physical anti-counterfeiting measures (e.g., cryptographic NFC chips or tamper-evident seals).
+    </p>
+  </div>
+</div>
+
+<!-- How The System Works -->
+<section style="margin: 4rem 0;">
+  <div style="text-align: center; margin-bottom: 2.5rem;">
+    <span class="brand-badge" style="margin-bottom: 0.5rem; display: inline-block;">End-to-End Workflow</span>
+    <h2>How The Verification System Works</h2>
+    <p>A dual-tier architecture combining centralized convenience with decentralized cryptographic auditing.</p>
+  </div>
+
+  <div class="steps-container">
+    <div class="step-card">
+      <span class="step-number">01</span>
+      <div class="step-icon">
+        <i class="fa-solid fa-industry"></i>
+      </div>
+      <h3>Manufacturer Registration</h3>
+      <p>Authorized manufacturer enters product name, batch ID, mfg date, and unique code into the secure portal.</p>
+    </div>
+
+    <div class="step-card">
+      <span class="step-number">02</span>
+      <div class="step-icon" style="background: rgba(6, 182, 212, 0.15); color: var(--cyan);">
+        <i class="fa-solid fa-cube"></i>
+      </div>
+      <h3>Blockchain Mining</h3>
+      <p>A SHA-256 block containing the cryptographic fingerprint of the product is mined and linked to the ledger.</p>
+    </div>
+
+    <div class="step-card">
+      <span class="step-number">03</span>
+      <div class="step-icon" style="background: rgba(245, 158, 11, 0.15); color: var(--amber);">
+        <i class="fa-solid fa-qrcode"></i>
+      </div>
+      <h3>QR / Barcode Generation</h3>
+      <p>A unique QR code containing the verification token is generated and attached to physical packaging.</p>
+    </div>
+
+    <div class="step-card">
+      <span class="step-number">04</span>
+      <div class="step-icon" style="background: rgba(16, 185, 129, 0.15); color: var(--emerald);">
+        <i class="fa-solid fa-shield-check"></i>
+      </div>
+      <h3>Consumer Verification</h3>
+      <p>Consumers scan or enter the code. The system checks database records and verifies the blockchain chain integrity in real time.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Key System Benefits -->
+<section style="margin: 4rem 0;">
+  <div style="text-align: center; margin-bottom: 2.5rem;">
+    <span class="brand-badge" style="margin-bottom: 0.5rem; display: inline-block;">Key Advantages</span>
+    <h2>Why Use Blockchain For Anti-Counterfeiting?</h2>
+    <p>Traditional centralized databases are vulnerable to internal tampering. Blockchain provides cryptographic permanence.</p>
+  </div>
+
+  <div class="grid-2">
+    <div class="benefit-card">
+      <div class="benefit-icon indigo">
+        <i class="fa-solid fa-lock"></i>
+      </div>
+      <div>
+        <h3>Tamper-Evident Immutability</h3>
+        <p>Every registered block contains the hash of the preceding block. If an adversary attempts to alter a product's batch or expiry date in the database, the hash validation immediately fails.</p>
+      </div>
+    </div>
+
+    <div class="benefit-card">
+      <div class="benefit-icon cyan">
+        <i class="fa-solid fa-bolt"></i>
+      </div>
+      <div>
+        <h3>Frictionless Consumer Verification</h3>
+        <p>No specialized hardware or native app required. Customers simply scan the QR code via their smartphone browser or enter the code manually to view instant validation results.</p>
+      </div>
+    </div>
+
+    <div class="benefit-card">
+      <div class="benefit-icon emerald">
+        <i class="fa-solid fa-diagram-project"></i>
+      </div>
+      <div>
+        <h3>Supply Chain Traceability</h3>
+        <p>Enables manufacturers, distributors, retailers, and end-users to trace batch numbers, manufacturing dates, and authorized vendor identifiers from a single unified audit trail.</p>
+      </div>
+    </div>
+
+    <div class="benefit-card">
+      <div class="benefit-icon amber">
+        <i class="fa-solid fa-chart-line"></i>
+      </div>
+      <div>
+        <h3>Real-time Counterfeit Incident Auditing</h3>
+        <p>Every scan attempt is logged with timestamp and verification result. Spikes in unknown code scans immediately alert brand owners to counterfeit distribution hotspots.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Try Sample Products Demo Card -->
+<section class="card" style="margin: 3rem 0; background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.7)); border-color: rgba(99, 102, 241, 0.3);">
+  <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem;">
+    <div>
+      <h3 style="font-size: 1.35rem;"><i class="fa-solid fa-flask" style="color: var(--cyan);"></i> Immediate College Presentation Demo</h3>
+      <p style="font-size: 0.9rem; margin-top: 0.2rem;">Click any pre-seeded sample product below to test the verification pipeline instantly:</p>
+    </div>
+    <a href="{{ url_for('verify') }}" class="btn btn-sm btn-secondary">Go to Scanner <i class="fa-solid fa-arrow-right"></i></a>
+  </div>
+
+  <div class="sample-pills">
+    {% for s in samples %}
+      <div class="sample-pill" data-code="{{ s.verification_code }}">
+        <i class="fa-solid fa-tag" style="color: var(--cyan);"></i>
+        <strong>{{ s.name }}</strong> ({{ s.product_id }}) &bull; <span class="font-mono" style="color: var(--primary-light);">{{ s.verification_code }}</span>
+      </div>
+    {% endfor %}
+    <div class="sample-pill" data-code="FAKE-COUNTERFEIT-CODE-999" style="border-color: rgba(244, 63, 94, 0.4);">
+      <i class="fa-solid fa-skull-crossbones" style="color: var(--rose);"></i>
+      <strong>Test Counterfeit/Unknown Code</strong>
+    </div>
+  </div>
+</section>
+{% endblock %}
 
