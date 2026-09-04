@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}Verify Product - Customer Portal{% endblock %}
+
+{% block content %}
+<div class="container container-narrow">
+  <div style="text-align: center; margin-bottom: 2rem;">
+    <span class="hero-pill">
+      <i class="fa-solid fa-shield-halved"></i> Consumer Authentication Gateway
+    </span>
+    <h1 style="font-size: 2.4rem; margin-top: 0.5rem;">Verify Product Authenticity</h1>
+    <p style="font-size: 1rem; max-width: 650px; margin: 0 auto;">
+      Scan the packaging QR code with your device camera, upload a saved photo of the code, or manually enter the unique identification token.
+    </p>
+  </div>
+
+  <div class="card" style="border-color: rgba(99, 102, 241, 0.3);">
+    <!-- Verification Mode Tabs -->
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="camera">
+        <i class="fa-solid fa-camera"></i> Live Camera Scanner
+      </button>
+      <button class="tab-btn" data-tab="manual">
+        <i class="fa-solid fa-keyboard"></i> Manual Code / ID Input
+      </button>
+      <button class="tab-btn" data-tab="upload">
+        <i class="fa-solid fa-image"></i> Upload QR Image
+      </button>
+    </div>
+
+    <!-- Tab 1: Live Camera Scanner -->
+    <div id="tab-camera" class="tab-pane active">
+      <div style="text-align: center; margin-bottom: 1.25rem;">
+        <p style="font-size: 0.9rem; color: #cbd5e1;">Point your device camera at the packaging barcode or QR code.</p>
+      </div>
+
+      <div class="scanner-box">
+        <div id="reader"></div>
+        <div class="scanner-overlay">
+          <div class="scan-laser"></div>
+        </div>
+      </div>
+
+      <div style="text-align: center; margin-top: 1.25rem;">
+        <button id="btn-start-camera" class="btn btn-emerald btn-sm">
+          <i class="fa-solid fa-video"></i> Start Camera Scanner
+        </button>
+        <button id="btn-stop-camera" class="btn btn-danger btn-sm" style="display: none;">
+          <i class="fa-solid fa-video-slash"></i> Stop Camera
+        </button>
+        <div id="scanner-status-msg" style="font-size: 0.85rem; color: var(--text-dim); margin-top: 0.75rem;">
+          Click "Start Camera Scanner" to request camera access.
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 2: Manual Code Input -->
+    <div id="tab-manual" class="tab-pane">
+      <form id="manual-verify-form" method="POST" action="{{ url_for('verify_check') }}">
+        <div class="form-group">
+          <label for="manual-query-input" class="form-label">Product ID or Unique Verification Code</label>
+          <input 
+            type="text" 
+            name="query" 
+            id="manual-query-input" 
+            class="form-control font-mono" 
+            placeholder="e.g. AUTH-PROD-1001-XYZ or PROD1001" 
+            value="{{ prefill_code or '' }}"
+            required
+            style="font-size: 1.05rem; padding: 0.85rem 1rem;"
+          >
+          <div class="input-hint">You can enter either the alphanumeric verification code or the registered Product ID.</div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block" style="padding: 0.85rem; font-size: 1.05rem;">
+          <i class="fa-solid fa-magnifying-glass"></i> Verify Against Blockchain Ledger
+        </button>
+      </form>
+    </div>
+
+    <!-- Tab 3: Upload Image File -->
+    <div id="tab-upload" class="tab-pane">
+      <div style="border: 2px dashed var(--border-glass); border-radius: var(--radius-md); padding: 2.5rem 1.5rem; text-align: center;">
+        <div style="font-size: 2.5rem; color: var(--cyan); margin-bottom: 0.75rem;">
+          <i class="fa-solid fa-cloud-arrow-up"></i>
+        </div>
+        <h4>Upload QR Code Image</h4>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">Select an image file (PNG, JPG, WEBP) containing the product QR code.</p>
+        
+        <input type="file" id="qr-file-input" accept="image/*" style="display: none;">
+        <button type="button" class="btn btn-secondary" onclick="document.getElementById('qr-file-input').click();">
+          <i class="fa-solid fa-folder-open"></i> Browse Image File
+        </button>
+      </div>
+    </div>
+
+    <!-- Quick Demo Test Pills -->
+    <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--border-subtle);">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem;">
+        <span style="font-size: 0.82rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--cyan);">
+          <i class="fa-solid fa-flask"></i> 1-Click Demo Samples (For Presentation):
+        </span>
+      </div>
+
+      <div class="sample-pills">
+        {% for s in sample_products %}
+          <div class="sample-pill" data-code="{{ s.verification_code }}">
+            <i class="fa-solid fa-cube"></i> {{ s.name }} (<strong>{{ s.product_id }}</strong>)
+          </div>
+        {% endfor %}
+        <div class="sample-pill" data-code="UNREGISTERED-COUNTERFEIT-999" style="border-color: rgba(244, 63, 94, 0.4);">
+          <i class="fa-solid fa-skull-crossbones" style="color: var(--rose);"></i> Test Counterfeit Code
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Educational Disclaimer Banner -->
+  <div class="disclaimer-card" style="margin-top: 2rem;">
+    <i class="fa-solid fa-lightbulb"></i>
+    <div>
+      <h4>How Verification Works</h4>
+      <p>
+        When you submit a code, the system queries the SQLite database and extracts the corresponding block on the SHA-256 blockchain ledger. 
+        It recalculates the cryptographic fingerprint of all product parameters and verifies that the block's hash pointer perfectly matches the chain.
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}
