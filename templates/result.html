@@ -1,0 +1,617 @@
+{% extends "base.html" %}
+
+{% block title %}Verification Result - {{ status }}{% endblock %}
+
+{% block content %}
+<div class="container container-narrow">
+
+  {% if status == 'VERIFIED' %}
+
+  <div class="result-card status-verified">
+
+    <div class="result-icon verified">
+      <i class="fa-solid fa-check"></i>
+    </div>
+
+    {% if external %}
+    <div class="badge badge-verified" style="font-size:0.85rem;padding:0.35rem 1rem;margin-bottom:0.75rem;">
+      <i class="fa-solid fa-database"></i>
+      BARCODE RECOGNIZED
+    </div>
+
+    <h1 class="result-title" style="color:#ffffff;">
+      PRODUCT FOUND
+    </h1>
+
+    <p class="result-subtitle" style="color:#34d399;">
+      <i class="fa-solid fa-circle-check"></i>
+      Product information found in external barcode database.
+    </p>
+
+    {% else %}
+
+    <div class="badge badge-verified" style="font-size:0.85rem;padding:0.35rem 1rem;margin-bottom:0.75rem;">
+      <i class="fa-solid fa-shield-check"></i>
+      BLOCKCHAIN VERIFIED
+    </div>
+
+    <h1 class="result-title" style="color:#ffffff;">
+      PRODUCT VERIFIED
+    </h1>
+
+    <p class="result-subtitle" style="color:#34d399;">
+      <i class="fa-solid fa-circle-check"></i>
+      Blockchain record verified successfully.
+    </p>
+
+    {% endif %}
+
+
+    <!-- Product Image -->
+    {% if external and product.image %}
+    <div style="text-align:center;margin:1.5rem 0;">
+      <img src="{{ product.image }}" alt="{{ product.name }}" style="
+          max-width:220px;
+          max-height:220px;
+          object-fit:contain;
+          border-radius:12px;
+          background:white;
+          padding:10px;
+        ">
+    </div>
+    {% endif %}
+
+
+    <!-- Product Details -->
+    <div class="spec-sheet">
+
+      <div class="spec-row">
+        <span class="spec-label">
+          <i class="fa-solid fa-tag"></i>
+          Product Name
+        </span>
+
+        <span class="spec-val" style="font-size:1.05rem;">
+          {{ product.name }}
+        </span>
+      </div>
+
+
+      <div class="spec-row">
+        <span class="spec-label">
+          <i class="fa-solid fa-building"></i>
+          Brand / Manufacturer
+        </span>
+
+        <span class="spec-val">
+          {{ product.manufacturer }}
+        </span>
+      </div>
+
+
+      <div class="spec-row">
+        <span class="spec-label">
+          <i class="fa-solid fa-barcode"></i>
+          Barcode / Product ID
+        </span>
+
+        <span class="spec-val font-mono" style="color:var(--cyan);">
+          {{ product.product_id }}
+        </span>
+      </div>
+
+
+      <div class="spec-row">
+        <span class="spec-label">
+          <i class="fa-solid fa-layer-group"></i>
+          Category
+        </span>
+
+        <span class="spec-val">
+          {{ product.category }}
+        </span>
+      </div>
+
+
+      {% if product.batch_number %}
+      <div class="spec-row">
+        <span class="spec-label">
+          <i class="fa-solid fa-cubes-stacked"></i>
+          Batch
+        </span>
+
+        <span class="spec-val font-mono">
+          {{ product.batch_number }}
+        </span>
+      </div>
+      {% endif %}
+
+
+      {% if product.mfg_date %}
+      <div class="spec-row">
+        <span class="spec-label">
+          <i class="fa-solid fa-calendar-days"></i>
+          Manufacturing Date
+        </span>
+
+        <span class="spec-val">
+          {{ product.mfg_date }}
+        </span>
+      </div>
+      {% endif %}
+
+
+      {% if product.exp_date %}
+      <div class="spec-row">
+        <span class="spec-label">
+          <i class="fa-solid fa-hourglass-end"></i>
+          Expiry Date
+        </span>
+
+        <span class="spec-val">
+          {{ product.exp_date }}
+        </span>
+      </div>
+      {% endif %}
+
+
+      {% if product.description %}
+      <div class="spec-row">
+        <span class="spec-label">
+          <i class="fa-solid fa-circle-info"></i>
+          Description
+        </span>
+
+        <span class="spec-val">
+          {{ product.description }}
+        </span>
+      </div>
+      {% endif %}
+
+
+      {% if external %}
+      <div class="spec-row">
+        <span class="spec-label">
+          <i class="fa-solid fa-globe"></i>
+          Data Source
+        </span>
+
+        <span class="spec-val" style="color:#34d399;">
+          External Barcode Database
+        </span>
+      </div>
+
+      <div class="spec-row">
+        <span class="spec-label">
+          <i class="fa-solid fa-shield"></i>
+          Verification
+        </span>
+
+        <span class="spec-val" style="color:#fbbf24;">
+          Barcode Recognized
+        </span>
+      </div>
+      {% else %}
+      <div class="spec-row">
+        <span class="spec-label">
+          <i class="fa-solid fa-shield-check"></i>
+          Verification Status
+        </span>
+
+        <span class="spec-val" style="color:#34d399;">
+          AUTHENTICALLY REGISTERED
+        </span>
+      </div>
+      {% endif %}
+
+    </div>
+
+
+    <!-- Blockchain proof -->
+    {% if block %}
+
+    <div class="blockchain-card">
+
+      <div style="
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:0.75rem;
+    ">
+
+        <h4 style="
+        font-size:0.95rem;
+        color:var(--cyan);
+        display:flex;
+        align-items:center;
+        gap:0.5rem;
+      ">
+          <i class="fa-solid fa-cube"></i>
+          Blockchain Cryptographic Receipt
+        </h4>
+
+        <span class="badge badge-info font-mono">
+          Block #{{ block.index }}
+        </span>
+
+      </div>
+
+
+      <div style="font-size:0.82rem;line-height:1.6;">
+
+        <div style="margin-bottom:0.4rem;">
+          <span style="color:var(--text-muted);">
+            Timestamp:
+          </span>
+
+          <span class="font-mono" style="color:#cbd5e1;">
+            {{ block.timestamp }}
+          </span>
+        </div>
+
+
+        <div style="margin-bottom:0.4rem;">
+          <span style="color:var(--text-muted);">
+            Block Hash:
+          </span>
+
+          <br>
+
+          <div class="hash-pill font-mono">
+            {{ block.hash }}
+          </div>
+        </div>
+
+
+        <div style="margin-bottom:0.4rem;">
+          <span style="color:var(--text-muted);">
+            Previous Block Hash:
+          </span>
+
+          <br>
+
+          <div class="hash-pill font-mono" style="color:var(--text-muted);">
+            {{ block.previous_hash }}
+          </div>
+        </div>
+
+
+        <div>
+          <span style="color:var(--text-muted);">
+            Proof-of-Work Nonce:
+          </span>
+
+          <span class="font-mono" style="color:var(--amber);">
+            {{ block.nonce }}
+          </span>
+
+          <span style="
+          color:var(--emerald);
+          margin-left:1rem;
+        ">
+            <i class="fa-solid fa-shield-check"></i>
+            Hash criteria satisfied
+          </span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    {% endif %}
+
+
+    {% if external %}
+
+    <div class="disclaimer-card" style="
+         text-align:left;
+         margin-top:1.5rem;
+         background:rgba(245,158,11,0.08);
+         border-color:rgba(245,158,11,0.3);
+       ">
+
+      <i class="fa-solid fa-circle-info" style="color:var(--amber);"></i>
+
+      <div>
+
+        <h4 style="color:var(--amber);">
+          Barcode Verification Notice
+        </h4>
+
+        <p style="color:#e2e8f0;">
+          This barcode was recognized by the external product
+          database. Barcode lookup confirms product information,
+          but a barcode alone cannot guarantee that the physical
+          product is genuine.
+        </p>
+
+      </div>
+
+    </div>
+
+    {% endif %}
+
+
+    <div style="
+    margin-top:2rem;
+    display:flex;
+    justify-content:center;
+    gap:1rem;
+    flex-wrap:wrap;
+  ">
+
+      <a href="{{ url_for('verify') }}" class="btn btn-secondary">
+
+        <i class="fa-solid fa-qrcode"></i>
+        Verify Another Product
+
+      </a>
+
+      <a href="{{ url_for('index') }}" class="btn btn-primary">
+
+        <i class="fa-solid fa-house"></i>
+        Home
+
+      </a>
+
+    </div>
+
+  </div>
+
+
+  {% elif status == 'NOT_VERIFIED' %}
+
+
+  <div class="result-card status-failed">
+
+    <div class="result-icon failed">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+    </div>
+
+    <div class="badge badge-failed" style="
+         font-size:0.85rem;
+         padding:0.35rem 1rem;
+         margin-bottom:0.75rem;
+       ">
+
+      <i class="fa-solid fa-triangle-exclamation"></i>
+      NOT FOUND
+
+    </div>
+
+
+    <h1 class="result-title" style="color:#fb7185;">
+
+      PRODUCT NOT VERIFIED
+
+    </h1>
+
+
+    <p class="result-subtitle" style="color:#cbd5e1;">
+
+      {{ message }}
+
+    </p>
+
+
+    <div class="spec-sheet" style="
+         text-align:center;
+         padding:1.5rem;
+       ">
+
+      <p style="
+      font-size:0.95rem;
+      color:var(--text-muted);
+      margin-bottom:0.5rem;
+    ">
+        Searched Identifier:
+      </p>
+
+
+      <div class="hash-pill font-mono" style="
+           font-size:1.1rem;
+           color:#fb7185;
+           display:inline-block;
+           padding:0.5rem 1.25rem;
+         ">
+
+        {{ query }}
+
+      </div>
+
+
+      <p style="
+      font-size:0.85rem;
+      color:var(--text-dim);
+      margin-top:1rem;
+    ">
+
+        No matching product was found in the
+        local blockchain database or external barcode database.
+
+      </p>
+
+    </div>
+
+
+    <div class="disclaimer-card" style="
+         text-align:left;
+         background:rgba(244,63,94,0.08);
+         border-color:rgba(244,63,94,0.3);
+       ">
+
+      <i class="fa-solid fa-shield-cat" style="color:var(--rose);"></i>
+
+      <div>
+
+        <h4 style="color:#fb7185;">
+          Product Not Recognized
+        </h4>
+
+        <p style="color:#e2e8f0;">
+          The entered barcode or product code could not be
+          matched with the available product records.
+        </p>
+
+      </div>
+
+    </div>
+
+
+    <div style="
+    margin-top:2rem;
+    display:flex;
+    justify-content:center;
+    gap:1rem;
+    flex-wrap:wrap;
+  ">
+
+      <a href="{{ url_for('verify') }}" class="btn btn-primary">
+
+        <i class="fa-solid fa-rotate-left"></i>
+        Try Again
+
+      </a>
+
+      <a href="{{ url_for('index') }}" class="btn btn-secondary">
+
+        <i class="fa-solid fa-house"></i>
+        Home
+
+      </a>
+
+    </div>
+
+  </div>
+
+
+  {% else %}
+
+
+  <div class="result-card status-tampered">
+
+    <div class="result-icon tampered">
+      <i class="fa-solid fa-bug"></i>
+    </div>
+
+    <div class="badge badge-warning" style="
+         font-size:0.85rem;
+         padding:0.35rem 1rem;
+         margin-bottom:0.75rem;
+       ">
+
+      <i class="fa-solid fa-circle-exclamation"></i>
+      CRYPTOGRAPHIC TAMPER DETECTED
+
+    </div>
+
+
+    <h1 class="result-title" style="color:#fbbf24;">
+
+      RECORD INTEGRITY CHECK FAILED
+
+    </h1>
+
+
+    <p class="result-subtitle" style="color:#cbd5e1;">
+
+      {{ message }}
+
+    </p>
+
+
+    <div class="spec-sheet" style="text-align:left;">
+
+      <div class="spec-row">
+
+        <span class="spec-label">
+          Audited Identifier
+        </span>
+
+        <span class="spec-val font-mono">
+          {{ query }}
+        </span>
+
+      </div>
+
+
+      <div class="spec-row">
+
+        <span class="spec-label">
+          Failure Reason
+        </span>
+
+        <span class="spec-val" style="color:#fbbf24;">
+
+          {{ message }}
+
+        </span>
+
+      </div>
+
+
+      <div class="spec-row">
+
+        <span class="spec-label">
+          Blockchain Integrity
+        </span>
+
+        <span class="spec-val" style="color:#fb7185;">
+
+          FAILED
+
+        </span>
+
+      </div>
+
+    </div>
+
+
+    <div style="
+    margin-top:2rem;
+    display:flex;
+    justify-content:center;
+  ">
+
+      <a href="{{ url_for('verify') }}" class="btn btn-secondary">
+
+        <i class="fa-solid fa-rotate-left"></i>
+        Check Another Code
+
+      </a>
+
+    </div>
+
+  </div>
+
+  {% endif %}
+
+
+  <!-- Academic Disclaimer -->
+
+  <div class="disclaimer-card" style="margin-top:2.5rem;">
+
+    <i class="fa-solid fa-graduation-cap"></i>
+
+    <div>
+
+      <h4>
+        Academic Project Prototype Disclaimer
+      </h4>
+
+      <p>
+        This college project demonstrates product identification
+        using barcode lookup and a simulated SHA-256 blockchain.
+        A barcode lookup can identify product information, but
+        barcode data alone cannot prove that a physical item is
+        genuine.
+      </p>
+
+    </div>
+
+  </div>
+
+</div>
+
+{% endblock %}
