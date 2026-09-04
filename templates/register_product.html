@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+
+{% block title %}Register New Product - Admin{% endblock %}
+
+{% block content %}
+<div class="container container-narrow">
+  <div style="margin-bottom: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <h1 style="font-size: 2rem;"><i class="fa-solid fa-plus-circle" style="color: var(--primary-light);"></i> Product Registration</h1>
+        <p style="font-size: 0.95rem;">Register an authentic item, generate its verification QR code, and append an immutable block to the blockchain.</p>
+      </div>
+      <a href="{{ url_for('products') }}" class="btn btn-sm btn-secondary">
+        <i class="fa-solid fa-boxes-stacked"></i> View All Products
+      </a>
+    </div>
+  </div>
+
+  {% if registered %}
+    <!-- Success Confirmation & Download Card -->
+    <div class="card" style="border-color: rgba(16, 185, 129, 0.4); background: linear-gradient(135deg, rgba(16, 185, 129, 0.08), rgba(15, 23, 42, 0.9)); margin-bottom: 2.5rem;">
+      <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
+        <div style="width: 48px; height: 48px; border-radius: 50%; background: rgba(16, 185, 129, 0.2); color: var(--emerald); display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+          <i class="fa-solid fa-circle-check"></i>
+        </div>
+        <div>
+          <h3 style="color: var(--emerald); font-size: 1.35rem;">Product Registered & Blockchain Block Mined!</h3>
+          <p style="font-size: 0.88rem; color: #cbd5e1;">A cryptographically linked block has been created and verified on the simulated ledger.</p>
+        </div>
+      </div>
+
+      <div class="grid-2" style="align-items: center;">
+        <div style="text-align: center; background: #ffffff; padding: 1.5rem; border-radius: var(--radius-md);">
+          <img src="{{ url_for('static', filename=registered.qr_code_path) }}" alt="Verification QR Code" style="max-width: 220px; width: 100%; height: auto; border-radius: 4px;">
+          <div style="margin-top: 0.75rem; color: #0f172a; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; font-weight: 600;">
+            {{ registered.verification_code }}
+          </div>
+        </div>
+
+        <div>
+          <div class="spec-sheet" style="margin: 0 0 1.25rem;">
+            <div class="spec-row">
+              <span class="spec-label">Product Name</span>
+              <span class="spec-val">{{ registered.name }}</span>
+            </div>
+            <div class="spec-row">
+              <span class="spec-label">Product ID</span>
+              <span class="spec-val font-mono">{{ registered.product_id }}</span>
+            </div>
+            <div class="spec-row">
+              <span class="spec-label">Manufacturer</span>
+              <span class="spec-val">{{ registered.manufacturer }}</span>
+            </div>
+            <div class="spec-row">
+              <span class="spec-label">Batch Number</span>
+              <span class="spec-val font-mono">{{ registered.batch_number }}</span>
+            </div>
+            <div class="spec-row">
+              <span class="spec-label">Blockchain Block</span>
+              <span class="spec-val font-mono" style="color: var(--cyan);">Block #{{ block.index }}</span>
+            </div>
+          </div>
+
+          <div style="display: flex; flex-wrap: wrap; gap: 0.75rem;">
+            <a href="{{ url_for('download_qr', filename=registered.qr_code_path.split('/')[-1]) }}" class="btn btn-emerald btn-sm">
+              <i class="fa-solid fa-download"></i> Download QR Image
+            </a>
+            <a href="{{ url_for('verify_check', query=registered.verification_code) }}" class="btn btn-secondary btn-sm" target="_blank">
+              <i class="fa-solid fa-arrow-up-right-from-square"></i> Test Verify
+            </a>
+            <a href="{{ url_for('register_product') }}" class="btn btn-primary btn-sm">
+              <i class="fa-solid fa-plus"></i> Register Another
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  <!-- Product Registration Form -->
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title"><i class="fa-solid fa-pen-to-square" style="color: var(--primary-light);"></i> Product Specification Form</h3>
+    </div>
+
+    <form method="POST" action="{{ url_for('register_product') }}">
+      <div class="grid-2">
+        <div class="form-group">
+          <label for="name" class="form-label">Product Name <span class="req">*</span></label>
+          <input type="text" name="name" id="name" class="form-control" placeholder="e.g. Ultra HD Smart LED TV" required>
+        </div>
+
+        <div class="form-group">
+          <label for="product_id" class="form-label">Product ID (Unique Identifier) <span class="req">*</span></label>
+          <input type="text" name="product_id" id="product_id" class="form-control font-mono" placeholder="e.g. PROD1005" required>
+          <div class="input-hint">Unique alphanumeric model/SKU code.</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="form-group">
+          <label for="manufacturer" class="form-label">Manufacturer Name <span class="req">*</span></label>
+          <input type="text" name="manufacturer" id="manufacturer" class="form-control" placeholder="e.g. Apex Electronics Industries" required>
+        </div>
+
+        <div class="form-group">
+          <label for="category" class="form-label">Product Category <span class="req">*</span></label>
+          <select name="category" id="category" class="form-control" required>
+            <option value="" disabled selected>-- Select Industry Category --</option>
+            <option value="Electronics">Electronics & Hardware</option>
+            <option value="Pharmaceuticals">Pharmaceuticals & Healthcare</option>
+            <option value="Food & Beverage">Food, Beverage & Organics</option>
+            <option value="Apparel">Fashion & Footwear</option>
+            <option value="Cosmetics">Cosmetics & Personal Care</option>
+            <option value="Luxury Goods">Luxury Goods & Jewelry</option>
+            <option value="Automotive">Automotive & Spare Parts</option>
+            <option value="Other">Other Industrial Goods</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid-3">
+        <div class="form-group">
+          <label for="batch_number" class="form-label">Batch Number <span class="req">*</span></label>
+          <input type="text" name="batch_number" id="batch_number" class="form-control font-mono" placeholder="e.g. BATCH-2026-X01" required>
+        </div>
+
+        <div class="form-group">
+          <label for="mfg_date" class="form-label">Manufacturing Date <span class="req">*</span></label>
+          <input type="date" name="mfg_date" id="mfg_date" class="form-control" required>
+        </div>
+
+        <div class="form-group">
+          <label for="exp_date" class="form-label">Expiry Date (Optional)</label>
+          <input type="date" name="exp_date" id="exp_date" class="form-control">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="verification_code" class="form-label">Unique Verification Code <span class="req">*</span></label>
+        <div class="input-with-action">
+          <input type="text" name="verification_code" id="verification_code" class="form-control font-mono" placeholder="e.g. AUTH-PROD-9812-7491" required>
+          <button type="button" id="btn-generate-code" class="btn btn-secondary" title="Generate random secure code">
+            <i class="fa-solid fa-arrows-rotate"></i> Auto-Generate
+          </button>
+        </div>
+        <div class="input-hint">This cryptographic token is embedded into the QR code and stored in the blockchain block.</div>
+      </div>
+
+      <div class="form-group">
+        <label for="description" class="form-label">Product Description / Specifications</label>
+        <textarea name="description" id="description" class="form-control" rows="3" placeholder="Enter optional product notes, packaging details, or serial indicators..."></textarea>
+      </div>
+
+      <div style="margin-top: 1.75rem; display: flex; justify-content: flex-end; gap: 1rem;">
+        <button type="reset" class="btn btn-secondary">Clear Fields</button>
+        <button type="submit" class="btn btn-primary" style="padding: 0.8rem 2rem;">
+          <i class="fa-solid fa-cube"></i> Register & Mine Block
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
