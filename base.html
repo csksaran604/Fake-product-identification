@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Fake Product Detector{% endblock %} - Blockchain & Barcode Verification Prototype</title>
+  <meta name="description" content="An educational prototype system for identifying counterfeit products using QR/barcode scanning and a simulated SHA-256 blockchain ledger.">
+
+  <!-- Modern Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+  <!-- Html5-Qrcode Library (CDN) -->
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+  <!-- Chart.js (CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <!-- Top Prototype Disclaimer Banner -->
+  <div class="prototype-disclaimer">
+    <span>
+      <i class="fa-solid fa-graduation-cap"></i>
+      <strong>Academic Project Prototype:</strong> This system demonstrates product registration integrity using simulated SHA-256 blockchain blocks. Physical tag duplication prevention requires hardware cryptography/NFC.
+    </span>
+  </div>
+
+  <!-- Main Navigation Bar -->
+  <header class="navbar">
+    <div class="container nav-container">
+      <a href="{{ url_for('index') }}" class="nav-brand">
+        <div class="brand-icon">
+          <i class="fa-solid fa-cubes"></i>
+        </div>
+        <div>
+          VerifyChain
+          <span class="brand-badge">Prototype</span>
+        </div>
+      </a>
+
+      <button class="mobile-toggle" aria-label="Toggle navigation menu">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+
+      <ul class="nav-links">
+        <li>
+          <a href="{{ url_for('index') }}" class="nav-link {% if request.endpoint == 'index' %}active{% endif %}">
+            <i class="fa-solid fa-house"></i> Home
+          </a>
+        </li>
+        <li>
+          <a href="{{ url_for('verify') }}" class="nav-link nav-cta {% if request.endpoint in ['verify', 'verify_check'] %}active{% endif %}">
+            <i class="fa-solid fa-qrcode"></i> Verify Product
+          </a>
+        </li>
+
+        {% if session.get('admin_logged_in') %}
+          <li>
+            <a href="{{ url_for('dashboard') }}" class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}">
+              <i class="fa-solid fa-chart-pie"></i> Dashboard
+            </a>
+          </li>
+          <li>
+            <a href="{{ url_for('register_product') }}" class="nav-link {% if request.endpoint == 'register_product' %}active{% endif %}">
+              <i class="fa-solid fa-plus-circle"></i> Register Product
+            </a>
+          </li>
+          <li>
+            <a href="{{ url_for('products') }}" class="nav-link {% if request.endpoint == 'products' %}active{% endif %}">
+              <i class="fa-solid fa-boxes-stacked"></i> Products Catalog
+            </a>
+          </li>
+          <li>
+            <a href="{{ url_for('logout') }}" class="nav-link btn-sm btn-danger" style="margin-left: 0.5rem;">
+              <i class="fa-solid fa-right-from-bracket"></i> Logout
+            </a>
+          </li>
+        {% else %}
+          <li>
+            <a href="{{ url_for('login') }}" class="nav-link {% if request.endpoint == 'login' %}active{% endif %}">
+              <i class="fa-solid fa-shield-halved"></i> Admin Login
+            </a>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main>
+    <div class="container">
+      <!-- Flash Messages -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="flash-container">
+            {% for category, message in messages %}
+              <div class="alert alert-{{ category }}">
+                <span><i class="fa-solid {% if category == 'success' %}fa-check-circle{% elif category == 'danger' %}fa-circle-exclamation{% elif category == 'warning' %}fa-triangle-exclamation{% else %}fa-circle-info{% endif %}"></i> {{ message }}</span>
+                <button class="alert-close" aria-label="Close notification">&times;</button>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+
+      {% block content %}{% endblock %}
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div>
+          <div class="nav-brand" style="margin-bottom: 0.5rem;">
+            <div class="brand-icon" style="width: 32px; height: 32px; font-size: 0.9rem;">
+              <i class="fa-solid fa-cubes"></i>
+            </div>
+            <span style="font-size: 1.1rem;">Fake Product Detector</span>
+          </div>
+          <p style="font-size: 0.82rem; max-width: 480px;">
+            Identifying Fake Products Through a Barcode-Based Blockchain System. Built as an educational college engineering prototype.
+          </p>
+        </div>
+
+        <div class="footer-tags">
+          <span class="footer-tag"><i class="fa-brands fa-python"></i> Python Flask</span>
+          <span class="footer-tag"><i class="fa-solid fa-database"></i> SQLite</span>
+          <span class="footer-tag"><i class="fa-solid fa-cube"></i> SHA-256 Blockchain</span>
+          <span class="footer-tag"><i class="fa-solid fa-qrcode"></i> QR / Barcode</span>
+          <span class="footer-tag"><i class="fa-brands fa-html5"></i> HTML5 / CSS3</span>
+        </div>
+      </div>
+
+      <div style="border-top: 1px solid rgba(255,255,255,0.06); padding-top: 1.25rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; font-size: 0.8rem; color: var(--text-dim);">
+        <div>&copy; 2026 College Project Prototype &bull; Department of Computer Science & Engineering</div>
+        <div>
+          <a href="{{ url_for('verify') }}" style="color: var(--text-dim); margin-right: 1rem;">Customer Verify</a>
+          <a href="{{ url_for('login') }}" style="color: var(--text-dim);">Admin Portal</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,322 @@
+{% extends "base.html" %}
+
+{% block title %}Administrator Dashboard - Analytics & Blockchain Explorer{% endblock %}
+
+{% block content %}
+<div class="container">
+  <!-- Dashboard Header -->
+  <div
+    style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem;">
+    <div>
+      <h1 style="font-size: 2.2rem;"><i class="fa-solid fa-chart-pie" style="color: var(--primary-light);"></i> System
+        Analytics & Blockchain Ledger</h1>
+      <p style="font-size: 0.95rem;">Monitor consumer verification scans, audit chain integrity, and manage
+        anti-counterfeiting records.</p>
+    </div>
+    <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+      <a href="{{ url_for('register_product') }}" class="btn btn-primary btn-sm">
+        <i class="fa-solid fa-plus"></i> Register Product
+      </a>
+      <a href="{{ url_for('products') }}" class="btn btn-secondary btn-sm">
+        <i class="fa-solid fa-boxes-stacked"></i> All Products
+      </a>
+    </div>
+  </div>
+
+  <!-- KPI Metrics Cards -->
+  <div class="grid-4" style="margin-bottom: 2rem;">
+    <div class="kpi-card">
+      <div class="kpi-icon" style="background: rgba(99, 102, 241, 0.15); color: var(--primary-light);">
+        <i class="fa-solid fa-box-archive"></i>
+      </div>
+      <div class="kpi-info">
+        <h3>{{ metrics.total_products }}</h3>
+        <p>Total Registered Products</p>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-icon" style="background: rgba(16, 185, 129, 0.15); color: var(--emerald);">
+        <i class="fa-solid fa-circle-check"></i>
+      </div>
+      <div class="kpi-info">
+        <h3>{{ metrics.verified_count }}</h3>
+        <p>Authentic Scans Verified</p>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-icon" style="background: rgba(244, 63, 94, 0.15); color: var(--rose);">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+      </div>
+      <div class="kpi-info">
+        <h3>{{ metrics.failed_count }}</h3>
+        <p>Failed / Suspicious Scans</p>
+      </div>
+    </div>
+
+    <div class="kpi-card">
+      <div class="kpi-icon" style="background: rgba(6, 182, 212, 0.15); color: var(--cyan);">
+        <i class="fa-solid fa-cubes"></i>
+      </div>
+      <div class="kpi-info">
+        <h3>{{ metrics.total_blocks }}</h3>
+        <p>Total Blockchain Blocks</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive Blockchain Tamper Demonstration Panel -->
+  {% if chain_valid %}
+  <div class="card"
+    style="margin-bottom: 2.5rem; border-color: rgba(16, 185, 129, 0.3); background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.6));">
+    {% else %}
+    <div class="card"
+      style="margin-bottom: 2.5rem; border-color: rgba(244, 63, 94, 0.5); background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.6));">
+      {% endif %}
+
+      <div
+        style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+
+          {% if chain_valid %}
+          <div
+            style="width: 38px; height: 38px; border-radius: var(--radius-sm); background: rgba(16, 185, 129, 0.15); color: var(--emerald); display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+          {% else %}
+          <div
+            style="width: 38px; height: 38px; border-radius: var(--radius-sm); background: rgba(244, 63, 94, 0.2); color: var(--rose); display: flex; align-items: center; justify-content: center; font-size: 1.2rem;">
+            <i class="fa-solid fa-skull-crossbones"></i>
+          </div>
+          {% endif %}
+
+          <div>
+            <h3 style="font-size: 1.2rem;">Blockchain Ledger Cryptographic Health</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">
+              Status:
+              {% if chain_valid %}
+              <span class="badge badge-verified"><i class="fa-solid fa-circle-check"></i> VALID & IMMUTABLE</span>
+              {% else %}
+              <span class="badge badge-failed"><i class="fa-solid fa-triangle-exclamation"></i> COMPROMISED AT BLOCK #{{
+                broken_idx }}</span>
+              {% endif %}
+            </p>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+          {% if chain_valid %}
+          <button type="button" class="btn btn-sm btn-danger" onclick="triggerTamperDemo('PROD1001')">
+            <i class="fa-solid fa-bug"></i> Simulate Attack (Tamper Block)
+          </button>
+          {% else %}
+          <button type="button" class="btn btn-sm btn-emerald" onclick="triggerRepairChain()">
+            <i class="fa-solid fa-wrench"></i> Re-mine & Repair Ledger
+          </button>
+          {% endif %}
+        </div>
+      </div>
+
+      <p style="font-size: 0.85rem; color: #cbd5e1; margin-bottom: 1.25rem;">
+        <strong>College Demonstration Feature:</strong> The "Simulate Attack" button intentionally mutates a block's
+        metadata without re-mining.
+        This causes immediate SHA-256 hash pointer failure during verification to prove how blockchain prevents silent
+        database tampering.
+      </p>
+
+      <!-- Visual Chain Flow -->
+      <div
+        style="font-size: 0.82rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 0.5rem;">
+        <i class="fa-solid fa-link"></i> Live Blockchain Sequence (Scroll horizontally):
+      </div>
+
+      <div class="blockchain-visualizer">
+        {% for blk in blockchain_chain %}
+
+        {% if not chain_valid and blk.index >= broken_idx %}
+        <div class="block-node" style="border-color: rgba(244, 63, 94, 0.6); background: rgba(244, 63, 94, 0.05);">
+          {% else %}
+          <div class="block-node">
+            {% endif %}
+
+            <div class="block-node-header">
+              <h4>Block #{{ blk.index }}</h4>
+              <span class="badge badge-info" style="font-size: 0.7rem;">Nonce: {{ blk.nonce }}</span>
+            </div>
+
+            <div class="block-field">
+              <strong>ID:</strong> <span>{{ blk.product_id }}</span>
+            </div>
+
+            <div class="block-field">
+              <strong>Time:</strong> <span style="font-size: 0.72rem;">{{ blk.timestamp[:19] }}</span>
+            </div>
+
+            <div class="block-field">
+              <strong>Hash:</strong>
+              <div class="hash-pill font-mono" style="font-size: 0.7rem; margin-top: 0.2rem;">
+                {{ blk.hash[:20] }}...
+              </div>
+            </div>
+
+            <div class="block-field">
+              <strong>Prev:</strong>
+              <div class="hash-pill font-mono" style="font-size: 0.7rem; color: var(--text-dim); margin-top: 0.2rem;">
+                {{ blk.previous_hash[:20] }}...
+              </div>
+            </div>
+
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Analytics Charts Section -->
+      <div class="grid-2" style="margin-bottom: 2.5rem;">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title" style="font-size: 1.15rem;">
+              <i class="fa-solid fa-chart-pie" style="color: var(--primary-light);"></i> Registered Products by Category
+            </h3>
+          </div>
+
+          <div style="position: relative; height: 260px;">
+            <canvas id="categoryChart"></canvas>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title" style="font-size: 1.15rem;">
+              <i class="fa-solid fa-chart-column" style="color: var(--cyan);"></i> Customer Verification Scan Outcomes
+            </h3>
+          </div>
+
+          <div style="position: relative; height: 260px;">
+            <canvas id="statusChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Activity Tables Grid -->
+      <div class="grid-2">
+
+        <!-- Recent Product Registrations -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title" style="font-size: 1.15rem;">
+              <i class="fa-solid fa-clock-rotate-left" style="color: var(--emerald);"></i> Recent Products Registered
+            </h3>
+
+            <a href="{{ url_for('products') }}" class="btn btn-sm btn-secondary">View All</a>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table" style="font-size: 0.85rem;">
+              <thead>
+                <tr>
+                  <th>Product Name</th>
+                  <th>Category</th>
+                  <th>Product ID</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {% if recent_products %}
+                {% for p in recent_products %}
+                <tr>
+                  <td style="font-weight: 600; color: #ffffff;">{{ p.name }}</td>
+                  <td>
+                    <span class="badge badge-info" style="font-size: 0.7rem;">{{ p.category }}</span>
+                  </td>
+                  <td>
+                    <span class="font-mono" style="color: var(--cyan);">{{ p.product_id }}</span>
+                  </td>
+                </tr>
+                {% endfor %}
+                {% else %}
+                <tr>
+                  <td colspan="3" style="text-align: center; color: var(--text-dim); padding: 1.5rem;">
+                    No products registered yet.
+                  </td>
+                </tr>
+                {% endif %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Recent Customer Verification Audit Logs -->
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title" style="font-size: 1.15rem;">
+              <i class="fa-solid fa-list-check" style="color: var(--amber);"></i> Recent Verification Logs
+            </h3>
+
+            <span class="badge badge-info">{{ recent_logs|length }} logs</span>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table" style="font-size: 0.85rem;">
+              <thead>
+                <tr>
+                  <th>Scanned Code / ID</th>
+                  <th>Status</th>
+                  <th>Scanned At</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {% if recent_logs %}
+                {% for log in recent_logs %}
+                <tr>
+                  <td>
+                    <span class="font-mono" style="font-size: 0.78rem;">
+                      {{ log.verification_code[:18] }}{% if log.verification_code|length > 18 %}...{% endif %}
+                    </span>
+
+                    {% if log.product_name %}
+                    <div style="font-size: 0.72rem; color: var(--text-dim);">
+                      {{ log.product_name }}
+                    </div>
+                    {% endif %}
+                  </td>
+
+                  <td>
+                    {% if log.status == 'VERIFIED' %}
+                    <span class="badge badge-verified" style="font-size: 0.7rem;">
+                      <i class="fa-solid fa-check"></i> VERIFIED
+                    </span>
+                    {% elif log.status == 'PRODUCT_NOT_FOUND' %}
+                    <span class="badge badge-failed" style="font-size: 0.7rem;">
+                      <i class="fa-solid fa-xmark"></i> UNKNOWN
+                    </span>
+                    {% else %}
+                    <span class="badge badge-warning" style="font-size: 0.7rem;">
+                      <i class="fa-solid fa-triangle-exclamation"></i> TAMPERED
+                    </span>
+                    {% endif %}
+                  </td>
+
+                  <td style="font-size: 0.75rem; color: var(--text-dim);">
+                    {{ log.scanned_at[11:19] }} UTC
+                  </td>
+                </tr>
+                {% endfor %}
+                {% else %}
+                <tr>
+                  <td colspan="3" style="text-align: center; color: var(--text-dim); padding: 1.5rem;">
+                    No verification attempts recorded.
+                  </td>
+                </tr>
+                {% endif %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    {% endblock %}
