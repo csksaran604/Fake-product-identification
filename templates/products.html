@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block title %}Products Catalog - Admin{% endblock %}
+
+{% block content %}
+<div class="container">
+  <!-- Header -->
+  <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 2rem;">
+    <div>
+      <h1 style="font-size: 2rem;"><i class="fa-solid fa-boxes-stacked" style="color: var(--primary-light);"></i> Product Catalog</h1>
+      <p style="font-size: 0.95rem;">Manage registered products, inspect generated verification QR codes, and trigger verification audits.</p>
+    </div>
+    <div>
+      <a href="{{ url_for('register_product') }}" class="btn btn-primary">
+        <i class="fa-solid fa-plus-circle"></i> Register New Product
+      </a>
+    </div>
+  </div>
+
+  <!-- Search & Filter Controls -->
+  <div class="card" style="margin-bottom: 1.75rem; padding: 1.25rem;">
+    <form method="GET" action="{{ url_for('products') }}" style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
+      <div style="flex: 1; min-width: 260px;">
+        <input 
+          type="text" 
+          name="search" 
+          class="form-control" 
+          placeholder="Search by name, ID, manufacturer, or verification code..." 
+          value="{{ selected_search or '' }}"
+        >
+      </div>
+
+      <div style="min-width: 200px;">
+        <select name="category" class="form-control" onchange="this.form.submit()">
+          <option value="all">All Categories</option>
+          {% for cat in categories %}
+            <option value="{{ cat }}" {% if selected_category == cat %}selected{% endif %}>{{ cat }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <button type="submit" class="btn btn-secondary">
+        <i class="fa-solid fa-filter"></i> Apply Filter
+      </button>
+
+      {% if selected_search or (selected_category and selected_category != 'all') %}
+        <a href="{{ url_for('products') }}" class="btn btn-sm btn-secondary" title="Clear search filters">
+          <i class="fa-solid fa-xmark"></i> Clear
+        </a>
+      {% endif %}
+    </form>
+  </div>
+
+  <!-- Products Data Table -->
+  <div class="table-responsive">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>QR Code</th>
+          <th>Product & Category</th>
+          <th>Product ID</th>
+          <th>Manufacturer</th>
+          <th>Batch Number</th>
+          <th>Mfg / Exp Date</th>
+          <th>Verification Code</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if products %}
+          {% for p in products %}
+            <tr>
+              <td>
+                <div style="background: #ffffff; padding: 4px; border-radius: 6px; display: inline-block;">
+                  <img src="{{ url_for('static', filename=p.qr_code_path) }}" alt="QR" style="width: 44px; height: 44px; display: block;">
+                </div>
+              </td>
+              <td>
+                <div style="font-weight: 600; color: #ffffff;">{{ p.name }}</div>
+                <span class="badge badge-info" style="font-size: 0.72rem; margin-top: 0.25rem;">{{ p.category }}</span>
+              </td>
+              <td>
+                <span class="font-mono" style="color: var(--cyan); font-weight: 600;">{{ p.product_id }}</span>
+              </td>
+              <td>{{ p.manufacturer }}</td>
+              <td>
+                <span class="font-mono">{{ p.batch_number }}</span>
+              </td>
+              <td style="font-size: 0.85rem; color: var(--text-muted);">
+                <div>Mfg: {{ p.mfg_date }}</div>
+                <div>Exp: {{ p.exp_date or 'N/A' }}</div>
+              </td>
+              <td>
+                <span class="hash-pill font-mono" style="font-size: 0.75rem;">{{ p.verification_code }}</span>
+              </td>
+              <td>
+                <span class="badge badge-verified">
+                  <i class="fa-solid fa-shield-check"></i> Registered
+                </span>
+              </td>
+              <td>
+                <div style="display: flex; gap: 0.4rem;">
+                  <a href="{{ url_for('verify_check', query=p.verification_code) }}" class="btn btn-sm btn-secondary" title="Verify this product" target="_blank">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                  </a>
+                  <a href="{{ url_for('download_qr', filename=p.qr_code_path.split('/')[-1]) }}" class="btn btn-sm btn-secondary" title="Download QR image">
+                    <i class="fa-solid fa-download"></i>
+                  </a>
+                  <form method="POST" action="{{ url_for('delete_product', product_id=p.product_id) }}" onsubmit="return confirm('Delete product {{ p.product_id }}?');" style="display: inline;">
+                    <button type="submit" class="btn btn-sm btn-danger" title="Delete product">
+                      <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td colspan="9" style="text-align: center; padding: 3rem 1rem;">
+              <div style="font-size: 2rem; color: var(--text-dim); margin-bottom: 0.75rem;">
+                <i class="fa-solid fa-box-open"></i>
+              </div>
+              <h4 style="color: var(--text-muted);">No products found matching your filter criteria.</h4>
+              <p style="font-size: 0.85rem; margin-top: 0.25rem;">Try adjusting your search keywords or register a new product.</p>
+            </td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
